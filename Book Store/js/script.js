@@ -1,8 +1,18 @@
 searchForm = document.querySelector('.search-form');
 
-document.querySelector('#search-btn').onclick = () =>{
-  searchForm.classList.toggle('active');
-}
+// document.querySelector('#search-btn').onclick = () =>{
+//   searchForm.classList.toggle('active');
+//   console.log(searchForm);
+// }
+document.getElementById('searchForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const searchQuery = document.getElementById('searchInput').value;
+
+  // Redirect to results.html with search query and results as query parameters
+  const queryString = `q=${encodeURIComponent(searchQuery)}`;
+  window.location.href = `search.html?${queryString}`;
+});
 
 let loginForm = document.querySelector('.login-form-container');
 
@@ -38,13 +48,13 @@ window.onload = () =>{
 
 }
 
-function loader(){
-  document.querySelector('.loader-container').classList.add('active');
-}
+// function loader(){
+//   document.querySelector('.loader-container').classList.add('active');
+// }
 
-function fadeOut(){
-  setTimeout(loader, 4000);
-}
+// function fadeOut(){
+//   setTimeout(loader, 200);
+// }
 
 var swiper = new Swiper(".books-slider", {
   loop:true,

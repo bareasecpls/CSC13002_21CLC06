@@ -149,7 +149,9 @@ section{
 }
 
 #search-btn{
-    display: none;
+    width:10rem;
+    height:50rem;
+    background-color: #eee;
 }
 
 .header .header-2{
