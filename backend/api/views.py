@@ -40,10 +40,14 @@ class LoginAPIView(GenericAPIView):
         serializer = self.serializer_class(data=data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.check_user(data)
-            login(request, user)
-            user_data = UserSerializer(user).data
-            return Response(user_data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+            if user:
+                login(request, user)
+                user_data = UserSerializer(user).data
+                return Response(user_data, status=status.HTTP_200_OK)
+            return Response(
+                {"error": "Email or password is incorrect!"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
 
 class LogoutAPIView(APIView):
