@@ -1,28 +1,18 @@
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
+from django.http import Http404
 from rest_framework import status
-from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    GenericAPIView,
-    ListAPIView,
-    UpdateAPIView,
-)
-from rest_framework.views import APIView
+from rest_framework.generics import (CreateAPIView, DestroyAPIView,
+                                     GenericAPIView, ListAPIView,
+                                     UpdateAPIView)
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .models import CustomUser, Book, Cart, Order, OrderItem
-from .serializers import (
-    UserRegistrationSerializer,
-    UserLoginSerializer,
-    UserSerializer,
-    BookSerializer,
-    CartSerializer,
-    CartListSerializer,
-    OrderSerializer,
-    OrderItemSerializer
-)
-
+from .models import Book, Cart, CustomUser, Order, OrderItem
+from .serializers import (BookSerializer, CartListSerializer, CartSerializer,
+                          OrderItemSerializer, OrderSerializer,
+                          UserLoginSerializer, UserRegistrationSerializer,
+                          UserSerializer)
 
 # ==================== USER ====================
 
@@ -108,20 +98,13 @@ class CartAddBookView(CreateAPIView):
 
         try:
             user = CustomUser.objects.get(pk=user_id)
-        except CustomUser.DoesNotExist:
-            return Response(
-                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        try:
             book = Book.objects.get(pk=book_id)
-        except Book.DoesNotExist:
+        except (CustomUser.DoesNotExist, Book.DoesNotExist):
             return Response(
-                {"detail": "Book not found."}, status=status.HTTP_404_NOT_FOUND
+                {"detail": "User or book not found."}, status=status.HTTP_404_NOT_FOUND
             )
 
         cart_item = Cart.objects.filter(user=user, book=book).first()
-
         if cart_item:
             if book.units_in_stock < cart_item.quantity + quantity:
                 return Response(
@@ -178,10 +161,10 @@ class CartUpdateBookView(UpdateAPIView):
 
             book.units_in_stock -= new_quantity - cart_item.quantity
             book.save()
-            
+
             cart_item.quantity = new_quantity
             cart_item.save()
-            
+
             serializer = CartSerializer(cart_item)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Cart.DoesNotExist:
@@ -194,28 +177,21 @@ class CartDeleteBookView(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CartSerializer
 
-    def delete(self, request, **kwargs):
-        user_id = kwargs.get("user_id")
-        book_id = kwargs.get("book_id")
-        
-        try:
-            book = Book.objects.get(pk=book_id)
-        except Book.DoesNotExist:
-            return Response(
-                {"detail": "Book not found."}, status=status.HTTP_404_NOT_FOUND
-            )
+    def get_object(self):
+        user_id = self.kwargs.get("user_id")
+        book_id = self.kwargs.get("book_id")
 
         try:
             cart_item = Cart.objects.get(user__id=user_id, book__id=book_id)
-            book.units_in_stock += cart_item.quantity
-            book.save()
-            cart_item.delete()
-            serializer = CartSerializer(cart_item)
-            return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+            return cart_item
         except Cart.DoesNotExist:
-            return Response(
-                {"detail": "Cart or book not found."}, status=status.HTTP_404_NOT_FOUND
-            )
+            raise Http404("Cart item not found.")
+
+    def perform_destroy(self, instance):
+        book = instance.book
+        book.units_in_stock += instance.quantity
+        book.save()
+        instance.delete()
 
 
 # ==================== ORDER ====================
