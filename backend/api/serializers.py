@@ -66,7 +66,7 @@ class CartSerializer(ModelSerializer):
     class Meta:
         model = Cart
         fields = ["book", "quantity"]
-        
+
 
 class CartListSerializer(ModelSerializer):
     items = serializers.SerializerMethodField()
@@ -74,13 +74,11 @@ class CartListSerializer(ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ['items', 'total_payment']
+        fields = ["items", "total_payment"]
 
     def get_items(self, obj):
         book = BookSerializer(obj.book)
-        return [
-            {'book': book.data, 'quantity': obj.quantity}
-        ]
+        return [{"book": book.data, "quantity": obj.quantity}]
 
     def get_total_payment(self, obj):
         return obj.book.price * obj.quantity
@@ -98,3 +96,4 @@ class OrderSerializer(ModelSerializer):
     class Meta:
         model = Order
         fields = "__all__"
+        extra_fields = ["items"]

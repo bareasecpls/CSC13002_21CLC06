@@ -1,18 +1,27 @@
 from django.contrib.auth import login, logout
 from django.http import Http404
 from rest_framework import status
-from rest_framework.generics import (CreateAPIView, DestroyAPIView,
-                                     GenericAPIView, ListAPIView,
-                                     UpdateAPIView)
+from rest_framework.generics import (
+    CreateAPIView,
+    DestroyAPIView,
+    GenericAPIView,
+    ListAPIView,
+    UpdateAPIView,
+)
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Book, Cart, CustomUser, Order, OrderItem
-from .serializers import (BookSerializer, CartListSerializer, CartSerializer,
-                          OrderItemSerializer, OrderSerializer,
-                          UserLoginSerializer, UserRegistrationSerializer,
-                          UserSerializer)
+from .serializers import (
+    BookSerializer,
+    CartListSerializer,
+    CartSerializer,
+    OrderSerializer,
+    UserLoginSerializer,
+    UserRegistrationSerializer,
+    UserSerializer,
+)
 
 # ==================== USER ====================
 
@@ -195,3 +204,46 @@ class CartDeleteBookView(DestroyAPIView):
 
 
 # ==================== ORDER ====================
+
+
+class OrderListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs.get("user_id")
+        return Order.objects.filter(user__id=user_id).prefetch_related("orderitem_set")
+
+
+class OrderCreateView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderSerializer
+
+    def create(self, request, **kwargs):
+        user_id = kwargs.get("user_id")
+
+        try:
+            user = CustomUser.objects.get(pk=user_id)
+        except CustomUser.DoesNotExist:
+            return Response(
+                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        cart = Cart.objects.filter(user=user)
+        if cart.count() < 1:
+            return Response(
+                {"detail": "No items in cart."}, status=status.HTTP_204_NO_CONTENT
+            )
+
+        order = Order.objects.create(user=user, **request.data)
+        for item in cart:
+            book = item.book
+            quantity = item.quantity
+            subtotal = book.price * quantity
+            OrderItem.objects.create(
+                order=order, book=book, quantity=quantity, subtotal=subtotal
+            )
+        cart.delete()
+
+        serializer = self.serializer_class(order)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
