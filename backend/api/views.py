@@ -11,12 +11,18 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from .models import CustomUser
+from .models import CustomUser, Book, Cart, Order, OrderItem
 from .serializers import (
     UserRegistrationSerializer,
     UserLoginSerializer,
     UserSerializer,
+    BookSerializer,
+    CartSerializer,
+    OrderSerializer,
 )
+
+
+# ==================== USER ====================
 
 
 class RegisterAPIView(CreateAPIView):
@@ -63,3 +69,151 @@ class UserAPIView(ListAPIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
     serializer_class = UserSerializer
     queryset = CustomUser.objects.all()
+
+
+# ==================== BOOK ====================
+
+
+class BookListView(ListAPIView):
+    permission_classes = [AllowAny]
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+
+# Add/Update/Delete book are supported by admin site
+
+
+# ==================== CART ====================
+
+
+class CartListBooksView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CartSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs.get("user_id")
+        return Cart.objects.filter(user__id=user_id)
+
+
+class CartAddBookView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CartSerializer
+
+    def create(self, request, **kwargs):
+        user_id = kwargs.get("user_id")
+        book_id = request.data.get("book_id")
+        quantity = int(request.data.get("quantity", 1))
+
+        try:
+            user = CustomUser.objects.get(pk=user_id)
+        except CustomUser.DoesNotExist:
+            return Response(
+                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            book = Book.objects.get(pk=book_id)
+        except Book.DoesNotExist:
+            return Response(
+                {"detail": "Book not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        cart_item = Cart.objects.filter(user=user, book=book).first()
+
+        if cart_item:
+            if book.units_in_stock < cart_item.quantity + quantity:
+                return Response(
+                    {"error": "There are not enough items in stock."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            cart_item.quantity += quantity
+            cart_item.save()
+        else:
+            if book.units_in_stock < quantity:
+                return Response(
+                    {"error": "There are not enough items in stock."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            cart_item = Cart.objects.create(user=user, book=book, quantity=quantity)
+
+        book.units_in_stock -= quantity
+        book.save()
+
+        serializer = CartSerializer(cart_item)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class CartUpdateBookView(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CartSerializer
+
+    def update(self, request, **kwargs):
+        user_id = kwargs.get("user_id")
+        book_id = request.data.get("book_id")
+        new_quantity = int(request.data.get("quantity"))
+
+        try:
+            book = Book.objects.get(pk=book_id)
+        except Book.DoesNotExist:
+            return Response(
+                {"detail": "Book not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            cart_item = Cart.objects.get(user__id=user_id, book=book)
+
+            if int(new_quantity) <= 0:
+                return Response(
+                    {"detail": "Quantity must be greater than zero."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            if book.units_in_stock < new_quantity - cart_item.quantity:
+                return Response(
+                    {"error": "There are not enough items in stock."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            book.units_in_stock -= new_quantity - cart_item.quantity
+            book.save()
+            
+            cart_item.quantity = new_quantity
+            cart_item.save()
+            
+            serializer = CartSerializer(cart_item)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Cart.DoesNotExist:
+            return Response(
+                {"detail": "Cart or book not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class CartDeleteBookView(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CartSerializer
+
+    def delete(self, request, **kwargs):
+        user_id = kwargs.get("user_id")
+        book_id = kwargs.get("book_id")
+        
+        try:
+            book = Book.objects.get(pk=book_id)
+        except Book.DoesNotExist:
+            return Response(
+                {"detail": "Book not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            cart_item = Cart.objects.get(user__id=user_id, book__id=book_id)
+            book.units_in_stock += cart_item.quantity
+            book.save()
+            cart_item.delete()
+            serializer = CartSerializer(cart_item)
+            return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+        except Cart.DoesNotExist:
+            return Response(
+                {"detail": "Cart or book not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+
+# ==================== ORDER ====================

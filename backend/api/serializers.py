@@ -1,11 +1,12 @@
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer, Serializer
 from django.contrib.auth import authenticate
 
-from .models import CustomUser
+from .models import CustomUser, Book, Cart, Order, OrderItem
 
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
+class UserRegistrationSerializer(ModelSerializer):
     password = serializers.CharField(
         write_only=True,
         style={"input_type": "password"},
@@ -38,18 +39,44 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserLoginSerializer(serializers.Serializer):
+class UserLoginSerializer(Serializer):
     email = serializers.EmailField(max_length=50)
     password = serializers.CharField(write_only=True, style={"input_type": "password"})
 
     def check_user(self, data):
-        user = authenticate(
-            username=data["email"], password=data["password"]
-        )
+        user = authenticate(username=data["email"], password=data["password"])
         return user
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ["id", "email", "username", "fullname", "phone"]
+
+
+class BookSerializer(ModelSerializer):
+    class Meta:
+        model = Book
+        fields = "__all__"
+
+
+class CartSerializer(ModelSerializer):
+    book = BookSerializer(read_only=True)
+
+    class Meta:
+        model = Cart
+        fields = ["book", "quantity"]
+
+
+class OrderItemSerializer(ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ["id", "order_id", "book_id", "quantity", "subtotal"]
+
+
+class OrderSerializer(ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Order
+        fields = "__all__"
