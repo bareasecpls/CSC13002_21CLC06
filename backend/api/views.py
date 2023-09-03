@@ -18,6 +18,7 @@ from .serializers import (
     UserSerializer,
     BookSerializer,
     CartSerializer,
+    CartListSerializer,
     OrderSerializer,
 )
 
@@ -88,7 +89,7 @@ class BookListView(ListAPIView):
 
 class CartListBooksView(ListAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = CartSerializer
+    serializer_class = CartListSerializer
 
     def get_queryset(self):
         user_id = self.kwargs.get("user_id")
