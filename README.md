@@ -11,3 +11,16 @@ Course: **CSC13002**
 - Trương Diệu Đạt
 - Trịnh Hoàng An
 
+## Steps to setup and run the project
+
+### For Backend
+
+```bash
+cd backend
+pip install requirements.txt
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
+
+
