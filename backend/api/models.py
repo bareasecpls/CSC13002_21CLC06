@@ -5,7 +5,7 @@ from django.db import models
 # ==================== USER ====================
 
 
-# Customer user will need a custom manager
+# Custom user will need a custom manager
 # Ref: https://docs.djangoproject.com/en/4.2/topics/auth/customizing/#writing-a-manager-for-a-custom-user-model
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None):
