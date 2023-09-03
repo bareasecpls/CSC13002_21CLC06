@@ -20,6 +20,7 @@ from .serializers import (
     CartSerializer,
     CartListSerializer,
     OrderSerializer,
+    OrderItemSerializer
 )
 
 
@@ -87,7 +88,7 @@ class BookListView(ListAPIView):
 # ==================== CART ====================
 
 
-class CartListBooksView(ListAPIView):
+class CartListView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CartListSerializer
 
