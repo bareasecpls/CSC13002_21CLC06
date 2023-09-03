@@ -1,9 +1,9 @@
 from django.urls import path
 from api.views import (
-	RegisterAPIView,
-	LoginAPIView,
-	LogoutAPIView,
- 	UserAPIView,
+    RegisterAPIView,
+    LoginAPIView,
+    LogoutAPIView,
+    UserAPIView,
     BookListView,
     CartListView,
     CartAddBookView,
