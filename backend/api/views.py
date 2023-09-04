@@ -12,8 +12,9 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Book, Cart, CustomUser, Order, OrderItem
+from .models import Book, Cart, CustomUser, Order, OrderItem, Category
 from .serializers import (
+    CategorySerializer,
     BookSerializer,
     CartListSerializer,
     CartSerializer,
@@ -73,6 +74,12 @@ class UserAPIView(ListAPIView):
 
 
 # ==================== BOOK ====================
+
+
+class CategoryListView(ListAPIView):
+    permission_classes = [AllowAny]
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 
 class BookListView(ListAPIView):

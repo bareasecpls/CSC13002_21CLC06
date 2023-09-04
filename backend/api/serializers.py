@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, Serializer
 from django.contrib.auth import authenticate
 
-from .models import CustomUser, Book, Cart, Order, OrderItem
+from .models import CustomUser, Book, Cart, Order, OrderItem, Category
 
 
 class UserRegistrationSerializer(ModelSerializer):
@@ -52,6 +52,12 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ["id", "email", "username", "fullname", "phone"]
+
+
+class CategorySerializer(ModelSerializer):
+    class Meta:
+        model = Category
+        fields = "__all__"
 
 
 class BookSerializer(ModelSerializer):

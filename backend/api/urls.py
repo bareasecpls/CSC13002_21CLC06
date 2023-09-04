@@ -4,6 +4,7 @@ from api.views import (
     LoginAPIView,
     LogoutAPIView,
     UserAPIView,
+    CategoryListView,
     BookListView,
     CartListView,
     CartAddBookView,
@@ -21,6 +22,7 @@ urlpatterns = [
     path('logout/', LogoutAPIView.as_view(), name='logout'),
     path('users/', UserAPIView.as_view(), name='list-users'),
     # book
+    path('categories/',  CategoryListView.as_view(), name='list-categories'),
     path('books/',  BookListView.as_view(), name='list-books'),
     # cart
     path('cart/<int:user_id>/', CartListView.as_view(), name='user-cart-list-books'),
