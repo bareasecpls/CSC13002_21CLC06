@@ -1,4 +1,5 @@
 from django.contrib.auth import login, logout
+from django.db.models import Q
 from django.http import Http404
 from rest_framework import status
 from rest_framework.generics import (
@@ -12,12 +13,12 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Book, Cart, CustomUser, Order, OrderItem, Category
+from .models import Book, Cart, Category, CustomUser, Order, OrderItem
 from .serializers import (
-    CategorySerializer,
     BookSerializer,
     CartListSerializer,
     CartSerializer,
+    CategorySerializer,
     OrderSerializer,
     UserLoginSerializer,
     UserRegistrationSerializer,
@@ -86,6 +87,24 @@ class BookListView(ListAPIView):
     permission_classes = [AllowAny]
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+
+
+class BookSearchView(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = BookSerializer
+
+    def get_queryset(self):
+        keyword = self.request.query_params.get("q")
+
+        if keyword:
+            keyword = keyword.strip()
+            # Perform case-insensitive search on title or author
+            return Book.objects.filter(
+                Q(title__icontains=keyword) | Q(author__icontains=keyword)
+            )
+        else:
+            # Return all books if no keyword is provided
+            return Book.objects.all()
 
 
 # Add/Update/Delete book are supported by admin site
