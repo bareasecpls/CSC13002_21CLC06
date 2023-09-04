@@ -4,23 +4,20 @@ Web Application project
 
 Course: **CSC13002**
 
-## Students:
+Author: **Ngô Nguyễn Thanh Thanh**
 
-- Ngô Nguyễn Thanh Thanh
-- Nguyễn Hoàng Quốc Tuấn
-- Trương Diệu Đạt
-- Trịnh Hoàng An
-
-## Steps to setup and run the project
+## Setup and run the project
 
 ### For Backend
 
 ```bash
+# setup
 cd backend
 pip install requirements.txt
 python manage.py makemigrations
 python manage.py migrate
+# run the backend server
 python manage.py runserver
 ```
 
-
+### For Frontend
