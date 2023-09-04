@@ -8,7 +8,12 @@ Author: **Ngô Nguyễn Thanh Thanh**
 
 ## Setup and run the project
 
-### For Backend
+### Prerequisites
+
+- python >= 3.8
+- nodejs
+
+### Backend
 
 ```bash
 # setup
@@ -20,4 +25,12 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-### For Frontend
+### Frontend
+
+```bash
+# setup
+cd frontend
+npm install 
+# run the frontend server
+npm run dev
+```
