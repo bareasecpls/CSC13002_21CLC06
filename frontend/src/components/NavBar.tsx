@@ -1,3 +1,7 @@
+"use client"
+
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router";
 import {
   Menubar,
   MenubarContent,
@@ -7,12 +11,15 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBook } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "./ui/button";
-import { useNavigate } from "react-router";
+import { faBook, faChevronDown, faSignOutAlt, faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { Button } from "@/components/ui/button";
 import SearchBox from "./SearchBox";
-import { Link } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
+import axios from "axios";
+import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from "@/components/ui/toast"
+import { Toaster } from "./ui/toaster";
+import Avatar from "../assets/rose.jpg";
 
 interface Props {
   categories: any[];
@@ -21,10 +28,31 @@ interface Props {
 export default function NavBar({ categories }: Props) {
   const navigate = useNavigate();
   const { authContext, setAuthContext } = useAuthContext();
-  
-  const handleLogout = () => {
-    setAuthContext({...authContext, user: {}, isAuthenticated: false});
-  }
+  const { toast } = useToast();
+  console.log(authContext);
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("/api/logout/", {},);
+      toast({
+        title: "You have been logged out!",
+        action: (
+          <ToastAction altText="ok">OK</ToastAction>
+        ),
+      })
+      setAuthContext({ ...authContext, user: {}, isAuthenticated: false });
+      localStorage.removeItem("authData");
+    } catch (err: any) {
+      console.log(err.message);
+      toast({
+        title: "Failed to log out!",
+        action: (
+          <ToastAction altText="ok">OK</ToastAction>
+        ),
+      })
+      return;
+    }
+  };
 
   return (
     <>
@@ -42,16 +70,55 @@ export default function NavBar({ categories }: Props) {
           </a>
           <SearchBox />
           {authContext.isAuthenticated ? (
-            <div className="flex items-center">
-              <div>
-                <Button
-                  variant="secondary"
-                  onClick={handleLogout}
+            // <div className="flex items-center">
+            //   <div>{authContext.user.username}</div>
+            //   <div className="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+            //       <span className="font-medium text-gray-600 dark:text-gray-300">TT</span>
+            //   </div>
+            //   <div>
+            //     <Button className="px-3" variant="outline" onClick={handleLogout}>
+            //       <FontAwesomeIcon icon={faArrowRightFromBracket} style={{color: "#3f3f46",}} size="lg"/>
+            //     </Button>
+            //   </div>
+            // </div>
+            <div className="flex items-center relative">
+          <div className="mr-3 font-semibold">{authContext.user?.username}</div>
+          <div className="rounded-full h-10 w-10">
+            <img
+              src={Avatar}
+              alt="user avatar"
+              className="rounded-full h-10 w-10 object-cover"
+            />
+          </div>
+          <div className="dropdown group inline-block relative">
+            <button className="text-gray-700 font-semibold px-2 items-center">
+              <FontAwesomeIcon icon={faChevronDown} color="#42464B" />
+            </button>
+            <ul className="dropdown-menu z-10 group-hover:block absolute hidden border border-gray-200 bg-white right-0">
+              <li className="hover:bg-gray-200 p-1">
+                <Link
+                  to="/"
+                  className="text-base text-black hover:text-black w-28"
                 >
+                  <FontAwesomeIcon
+                    icon={faUserCircle}
+                    className="mx-2 text-gray-600"
+                  />
+                  Details
+                </Link>
+              </li>
+              <li className="hover:bg-gray-200 p-1">
+                <div onClick={handleLogout} className="text-base w-28">
+                  <FontAwesomeIcon
+                    icon={faSignOutAlt}
+                    className="mx-2 text-gray-600"
+                  />
                   Log out
-                </Button>
-              </div>
-            </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
           ) : (
             <div className="flex items-center">
               <div>
@@ -74,7 +141,6 @@ export default function NavBar({ categories }: Props) {
                 </Button>
               </div>
             </div>
-            // null
           )}
         </div>
       </nav>
@@ -106,6 +172,8 @@ export default function NavBar({ categories }: Props) {
           </MenubarMenu>
         </Menubar>
       </div>
+      <Toaster />
     </>
+    
   );
 }
