@@ -11,6 +11,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook,
+  faCartShopping,
   faChevronDown,
   faSignOutAlt,
   faUserCircle,
@@ -32,7 +33,6 @@ export default function NavBar({ categories }: Props) {
   const navigate = useNavigate();
   const { authContext, setAuthContext } = useAuthContext();
   const { toast } = useToast();
-  console.log(authContext);
 
   const handleLogout = async () => {
     try {
@@ -57,7 +57,7 @@ export default function NavBar({ categories }: Props) {
     <>
       <nav className="bg-white border-gray-200 dark:bg-gray-900">
         <div className="flex justify-between items-center mx-auto max-w-screen-xl py-4">
-          <a href="/" className="flex items-center">
+          <button onClick={() => navigate('/')} className="flex items-center">
             <FontAwesomeIcon
               icon={faBook}
               size="xl"
@@ -66,10 +66,13 @@ export default function NavBar({ categories }: Props) {
             <span className="self-center text-2xl font-bold text-zinc-700 ml-1">
               Bookly
             </span>
-          </a>
+          </button>
           <SearchBox />
           {authContext.isAuthenticated ? (
-            <div className="flex items-center relative">
+            <div className="flex items-center relative ">
+              <Button variant={"outline"} className="mr-8" onClick={() => navigate('/')}>
+                <FontAwesomeIcon className="fon" icon={faCartShopping} style={{color: "#3f3f46", fontSize: 20}} />
+              </Button>
               <div className="mr-3 font-semibold">
                 {authContext.user?.username}
               </div>
@@ -113,8 +116,8 @@ export default function NavBar({ categories }: Props) {
             <div className="flex items-center">
               <div>
                 <Button
-                  variant="secondary"
-                  className="mr-4"
+                  variant="outline"
+                  className="mr-3"
                   onClick={() => {
                     navigate("/login");
                   }}
@@ -122,7 +125,7 @@ export default function NavBar({ categories }: Props) {
                   Login
                 </Button>
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   onClick={() => {
                     navigate("/register");
                   }}

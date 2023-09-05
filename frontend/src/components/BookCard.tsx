@@ -9,9 +9,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faStarHalfStroke } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { ToastAction } from "./ui/toast";
+import { useToast } from "./ui/use-toast";
+
 
 interface BookCardProps {
-  book_id: number;
+  bookId: number;
   title: string;
   author: string;
   imgUrl: string;
@@ -19,14 +24,44 @@ interface BookCardProps {
 }
 
 export default function BookCard({
-  book_id,
+  bookId,
   title,
   author,
   imgUrl,
   price,
 }: BookCardProps) {
+  const { authContext } = useAuthContext();
+  const { toast } = useToast();
+
   const submitAddToCart = () => {
-    console.log("id", book_id);
+    handleAddToCart();
+  };
+
+  const handleAddToCart = async () => {
+    if (!authContext.isAuthenticated) {
+      toast({
+        title: "You need to login first!",
+        action: <ToastAction altText="ok">OK</ToastAction>,
+      });
+      return;
+    }
+    const userId = authContext.user.id;
+    try {
+      await axios.post("/api/cart/"+userId+"/add", {
+        book_id: bookId,
+        quantity: 1,
+      });
+      toast({
+        title: "Added book to your cart.",
+        action: <ToastAction altText="ok">OK</ToastAction>,
+      });
+    } catch (err: any) {
+      console.log(err.response.data);
+      toast({
+        title: "Failed to add book to your cart.",
+        action: <ToastAction altText="ok">OK</ToastAction>,
+      });
+    }
   };
 
   return (

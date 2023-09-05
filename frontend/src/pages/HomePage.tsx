@@ -11,7 +11,6 @@ export default function HomePage() {
   const fetchBooks = async () => {
     try {
       const { data } = await axios.get("/api/books/");
-      console.log("Books: ", data);
       setBookList(data);
     } catch (err: any) {
       console.log(err);
@@ -51,7 +50,7 @@ export default function HomePage() {
                   {bookList.map((book: any) => (
                     <div className="mb-3" key={book.id}>
                       <BookCard
-                        book_id={book.id}
+                        bookId={book.id}
                         title={book.title}
                         author={book.author}
                         imgUrl={book.image}

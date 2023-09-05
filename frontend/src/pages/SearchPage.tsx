@@ -2,16 +2,18 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Spinner from "@/components/Spinner";
 import BookCard from "@/components/BookCard";
+import { useSearchParams } from "react-router-dom";
 
 export default function SearchPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [bookList, setBookList] = useState([]);
+  const [searchParams, _] = useSearchParams();
 
   const fetchBooks = async () => {
     try {
-      const { data } = await axios.get("/api/search");
-      console.log("Books: ", data);
+      const query = searchParams.get("q")?.trim();
+      const { data } = await axios.get("/api/search?q=" + query);
       setBookList(data);
     } catch (err: any) {
       console.log(err);
@@ -20,11 +22,12 @@ export default function SearchPage() {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      fetchBooks();
-      setLoading(false);
-    }, 300);
-  }, []);
+    // setTimeout(() => {
+    fetchBooks();
+    setLoading(false);
+    // }, 300);
+  }, [searchParams]);
+
   return (
     <div>
       {loading && <Spinner />}
@@ -37,7 +40,7 @@ export default function SearchPage() {
           </div>
         ) : (
           <>
-            <div className="my-8 mx-auto max-w-screen-xl">
+            <div className="my-11 mx-auto max-w-screen-xl">
               <div className="text-center mb-8 relative">
                 <span className="text-3xl px-8 py-2 text-black bg-white border border-gray-300 relative z-10">
                   Search results
@@ -51,7 +54,7 @@ export default function SearchPage() {
                   {bookList.map((book: any) => (
                     <div className="mb-3" key={book.id}>
                       <BookCard
-                        book_id={book.id}
+                        bookId={book.id}
                         title={book.title}
                         author={book.author}
                         imgUrl={book.image}
