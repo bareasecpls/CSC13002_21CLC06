@@ -5,12 +5,10 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuthContext } from "@/contexts/AuthContext";
 
-
 export default function LoginPage() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const { authContext, setAuthContext } = useAuthContext();
-
 
   const submitHandler = (e: any) => {
     e.preventDefault();
@@ -19,8 +17,8 @@ export default function LoginPage() {
       setErrorMessage("User is already logged in!");
       return;
     }
-    const email = e.currentTarget.querySelector('#email').value.trim();
-    const password = e.currentTarget.querySelector('#password').value.trim();
+    const email = e.currentTarget.querySelector("#email").value.trim();
+    const password = e.currentTarget.querySelector("#password").value.trim();
     if (!email) {
       setErrorMessage("Email can not contain white spaces!");
       return;
@@ -29,7 +27,6 @@ export default function LoginPage() {
       setErrorMessage("Password can not contain white spaces!");
       return;
     }
-    console.log(email, password);
     handleLogin(email, password);
   };
 
@@ -38,12 +35,16 @@ export default function LoginPage() {
       const { data } = await axios.post("/api/login/", {
         email: email,
         password: password,
-      }, 
-    );
-      setAuthContext({...authContext, user: data, isAuthenticated: true});
+      });
+      setAuthContext({ ...authContext, user: data, isAuthenticated: true });
       navigate("/");
     } catch (err: any) {
-      setErrorMessage(err.message);
+      console.log(err.response.data);
+      const message =
+        err.response.data.error ||
+        err.response.data.email[0] ||
+        err.response.data.password[0];
+      setErrorMessage(message);
     }
   };
 
@@ -80,9 +81,14 @@ export default function LoginPage() {
                   required
                 />
               </div>
-              {errorMessage ? (<div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                {errorMessage}
-              </div>) : null}
+              {errorMessage ? (
+                <div
+                  className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                  role="alert"
+                >
+                  {errorMessage}
+                </div>
+              ) : null}
               <div className="flex items-center justify-between">
                 <div className="flex items-start">
                   <div className="flex items-center h-5">
@@ -93,9 +99,7 @@ export default function LoginPage() {
                     />
                   </div>
                   <div className="ml-3 text-sm">
-                    <label className="text-gray-500">
-                      Remember me
-                    </label>
+                    <label className="text-gray-500">Remember me</label>
                   </div>
                 </div>
                 <a
@@ -105,14 +109,11 @@ export default function LoginPage() {
                   Forgot password?
                 </a>
               </div>
-              <Button
-                type="submit"
-                className="w-full"
-              >
+              <Button type="submit" className="w-full">
                 Sign in
               </Button>
               <p className="text-sm font-light text-gray-500">
-              Not registered?{" "}
+                Not registered?{" "}
                 <a
                   href="/register"
                   className="font-medium text-primary-600 hover:underline"
