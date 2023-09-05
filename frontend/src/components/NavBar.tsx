@@ -1,5 +1,3 @@
-"use client";
-
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router";
 import {
@@ -38,7 +36,7 @@ export default function NavBar({ categories }: Props) {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/api/logout/", {});
+      await axios.get("/api/logout/");
       toast({
         title: "You have been logged out!",
         action: <ToastAction altText="ok">OK</ToastAction>,

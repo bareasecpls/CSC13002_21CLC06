@@ -62,7 +62,7 @@ class LoginAPIView(GenericAPIView):
 class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
+    def get(self, request):
         logout(request)
         response = Response(status=status.HTTP_204_NO_CONTENT)
         return response
