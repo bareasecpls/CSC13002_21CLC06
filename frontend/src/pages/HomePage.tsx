@@ -37,7 +37,7 @@ export default function HomePage() {
           </div>
         ) : (
           <>
-            <div className="my-8 mx-auto max-w-screen-xl">
+            <div className="my-11 mx-auto max-w-screen-xl">
               <div className="text-center mb-8 relative">
                 <span className="text-3xl px-8 py-2 text-black bg-white border border-gray-300 relative z-10">
                   All books
