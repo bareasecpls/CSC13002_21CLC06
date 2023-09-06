@@ -18,7 +18,7 @@ Author: **Ngô Nguyễn Thanh Thanh**
 ```bash
 # setup
 cd backend
-pip install requirements.txt
+pip install -r requirements.txt
 python manage.py makemigrations
 python manage.py migrate
 # run the backend server
