@@ -70,7 +70,7 @@ export default function NavBar({ categories }: Props) {
           <SearchBox />
           {authContext.isAuthenticated ? (
             <div className="flex items-center relative ">
-              <Button variant={"outline"} className="mr-8" onClick={() => navigate('/')}>
+              <Button variant={"outline"} className="mr-8" onClick={() => navigate('/cart')}>
                 <FontAwesomeIcon className="fon" icon={faCartShopping} style={{color: "#3f3f46", fontSize: 20}} />
               </Button>
               <div className="mr-3 font-semibold">

@@ -53,7 +53,7 @@ export default function HomePage() {
                         bookId={book.id}
                         title={book.title}
                         author={book.author}
-                        imgUrl={book.image}
+                        image={book.image}
                         price={book.price}
                       />
                     </div>

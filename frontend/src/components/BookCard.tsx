@@ -19,7 +19,7 @@ interface BookCardProps {
   bookId: number;
   title: string;
   author: string;
-  imgUrl: string;
+  image: string;
   price: string;
 }
 
@@ -27,7 +27,7 @@ export default function BookCard({
   bookId,
   title,
   author,
-  imgUrl,
+  image,
   price,
 }: BookCardProps) {
   const { authContext } = useAuthContext();
@@ -68,7 +68,7 @@ export default function BookCard({
     <Card className="w-[300px] hover:scale-105 hover:shadow-2xl">
       <CardHeader>
         <div className="flex justify-center mb-3">
-          <img className="object-cover h-64" src={imgUrl} />
+          <img className="object-cover h-64" src={image} />
         </div>
         <CardTitle>{title}</CardTitle>
         <CardDescription>

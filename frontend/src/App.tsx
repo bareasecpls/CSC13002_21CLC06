@@ -6,6 +6,8 @@ import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import CartPage from "./pages/CartPage";
+import OrderPage from "./pages/OrderPage";
 
 axios.defaults.baseURL = "http://localhost:8000";
 axios.defaults.xsrfCookieName = "csrftoken";
@@ -36,6 +38,8 @@ function App() {
         <Route path="/search" Component={SearchPage}></Route>
         <Route path="/login" Component={LoginPage}></Route>
         <Route path="/register" Component={RegisterPage}></Route>
+        <Route path="/cart" Component={CartPage}></Route>
+        <Route path="/order" Component={OrderPage}></Route>
       </Routes>
     </BrowserRouter>
   );
