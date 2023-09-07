@@ -259,8 +259,9 @@ class OrderCreateView(CreateAPIView):
             return Response(
                 {"detail": "No items in cart."}, status=status.HTTP_204_NO_CONTENT
             )
+        total_payment = sum([item.book.price*item.quantity for item in cart])
 
-        order = Order.objects.create(user=user, **request.data)
+        order = Order.objects.create(user=user, total_payment=total_payment, **request.data)
         for item in cart:
             book = item.book
             quantity = item.quantity
