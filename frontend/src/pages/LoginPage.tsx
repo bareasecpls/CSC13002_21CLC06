@@ -42,8 +42,8 @@ export default function LoginPage() {
       console.log(err.response.data);
       const message =
         err.response.data.error ||
-        err.response.data.email[0] ||
-        err.response.data.password[0];
+        err.response.data.email?.[0] ||
+        err.response.data.password?.[0];
       setErrorMessage(message);
     }
   };
