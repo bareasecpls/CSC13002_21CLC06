@@ -16,7 +16,6 @@ from rest_framework.views import APIView
 from .models import Book, Cart, Category, CustomUser, Order, OrderItem
 from .serializers import (
     BookSerializer,
-    CartListSerializer,
     CartSerializer,
     CategorySerializer,
     OrderSerializer,
@@ -115,7 +114,7 @@ class BookSearchView(ListAPIView):
 
 class CartListView(ListAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = CartListSerializer
+    serializer_class = CartSerializer
 
     def get_queryset(self):
         user_id = self.kwargs.get("user_id")
@@ -273,3 +272,5 @@ class OrderCreateView(CreateAPIView):
 
         serializer = self.serializer_class(order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+# Update/Delete order are supported by admin site
