@@ -16,6 +16,10 @@ export default function CartPage() {
   const [itemList, setItemList] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
 
+  if (!authContext.isAuthenticated) {
+    navigate("/");
+  }
+
   const fetchBooks = async () => {
     if (!authContext.isAuthenticated) {
       return;
