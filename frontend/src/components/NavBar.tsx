@@ -46,8 +46,9 @@ export default function NavBar({ categories }: Props) {
     } catch (err: any) {
       console.log(err.message);
       toast({
+        variant: "destructive",
         title: "Failed to log out!",
-        action: <ToastAction altText="ok">OK</ToastAction>,
+        action: <ToastAction altText="ok">Try again</ToastAction>,
       });
       return;
     }

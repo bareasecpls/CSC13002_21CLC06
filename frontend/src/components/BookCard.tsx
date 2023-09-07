@@ -57,8 +57,9 @@ export default function BookCard({
     } catch (err: any) {
       console.log(err.response.data);
       toast({
+        variant: "destructive",
         title: "Failed to add book to your cart.",
-        action: <ToastAction altText="ok">OK</ToastAction>,
+        action: <ToastAction altText="ok">try again</ToastAction>,
       });
     }
   };

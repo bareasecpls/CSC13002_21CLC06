@@ -56,8 +56,9 @@ export default function CartPage() {
     } catch (err: any) {
       console.log(err);
       toast({
+        variant: "destructive",
         title: "Failed to remove book from cart.",
-        action: <ToastAction altText="ok">OK</ToastAction>,
+        action: <ToastAction altText="ok">Try again</ToastAction>,
       });
     }
   };
@@ -86,8 +87,9 @@ export default function CartPage() {
     } catch (err: any) {
       console.log(err);
       toast({
+        variant: "destructive",
         title: "Failed to update book in your cart.",
-        action: <ToastAction altText="ok">OK</ToastAction>,
+        action: <ToastAction altText="ok">Try again</ToastAction>,
       });
     }
   };
