@@ -1,0 +1,6 @@
+# virtual env folder for backend
+venv
+
+__pycache__
+
+api/migrations/0*.py
