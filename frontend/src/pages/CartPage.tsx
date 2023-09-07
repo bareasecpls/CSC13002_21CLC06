@@ -203,12 +203,14 @@ export default function CartPage() {
                 </tbody>
               </table>
               <div className="my-4">
-                <Button
-                  className="w-full text-base py-6"
-                  onClick={() => navigate("/order")}
-                >
-                  Confirm and order
-                </Button>
+                {itemList?.length > 0 ? (
+                  <Button
+                    className="w-full text-base py-6"
+                    onClick={() => navigate("/order")}
+                  >
+                    Confirm and order
+                  </Button>
+                ) : null}
               </div>
             </div>
           </div>
