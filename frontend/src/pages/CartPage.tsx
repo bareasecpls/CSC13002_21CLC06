@@ -28,11 +28,7 @@ export default function CartPage() {
       const { data } = await axios.get(
         "/api/cart/" + authContext.user.id + "/"
       );
-      const sum = data.reduce((accSum: number, item: any) => {
-        return accSum + Number(item.book.price) * item.quantity;
-      }, 0);
       setItemList(data);
-      setSubtotal(sum);
     } catch (err: any) {
       console.log(err);
     }
@@ -42,11 +38,16 @@ export default function CartPage() {
     fetchBooks();
   }, [authContext]);
 
+  useEffect(() => {
+    const sum = itemList.reduce((accSum: number, item: any) => {
+      return accSum + Number(item.book.price) * item.quantity;
+    }, 0);
+    setSubtotal(sum);
+  }, [itemList]);
+
   const onRemove = async (userId: number, bookId: number) => {
     try {
-      await axios.delete(
-        "/api/cart/" + userId + "/delete/" + bookId
-      );
+      await axios.delete("/api/cart/" + userId + "/delete/" + bookId);
       setItemList(itemList.filter((item: any) => item.book.id !== bookId));
       toast({
         title: `Removed book #${bookId} from your cart.`,
@@ -71,7 +72,13 @@ export default function CartPage() {
         quantity: newQuantity,
       });
       console.log(data);
-      // setItemList(itemList.filter((item: any) => item.book.id !== bookId));
+      const newItemList: any = itemList.map((obj: any) => {
+        if (obj.book.id === bookId) {
+          return { ...obj, quantity: newQuantity };
+        }
+        return obj;
+      });
+      setItemList(newItemList);
       toast({
         title: `Updated book #${bookId} in your cart.`,
         action: <ToastAction altText="ok">OK</ToastAction>,
