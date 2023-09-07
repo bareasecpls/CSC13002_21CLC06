@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   Card,
   CardContent,
@@ -7,13 +8,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faStarHalfStroke } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { ToastAction } from "./ui/toast";
-import { useToast } from "./ui/use-toast";
-
 
 interface BookCardProps {
   bookId: number;
@@ -47,7 +46,7 @@ export default function BookCard({
     }
     const userId = authContext.user.id;
     try {
-      await axios.post("/api/cart/"+userId+"/add", {
+      await axios.post("/api/cart/" + userId + "/add", {
         book_id: bookId,
         quantity: 1,
       });
