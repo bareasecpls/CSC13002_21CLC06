@@ -22,7 +22,7 @@ export default function RegisterPage() {
     const password = target.querySelector("#password").value.trim();
     const repassword = target.querySelector("#re-password").value.trim();
     const phone = target.querySelector("#password").value.trim();
-    const fullname = target.querySelector("#password").value.trim();
+    const fullname = target.querySelector("#fullname").value.trim();
 
     handleRegister({username: username, email: email, password: password, re_password: repassword, phone: phone, fullname: fullname});
   };

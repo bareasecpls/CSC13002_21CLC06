@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import CartPage from "./pages/CartPage";
 import OrderPage from "./pages/OrderPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 axios.defaults.baseURL = "http://localhost:8000";
 axios.defaults.xsrfCookieName = "csrftoken";
@@ -40,6 +41,7 @@ function App() {
         <Route path="/register" Component={RegisterPage}></Route>
         <Route path="/cart" Component={CartPage}></Route>
         <Route path="/order" Component={OrderPage}></Route>
+        <Route path="*" Component={NotFoundPage}></Route>
       </Routes>
     </BrowserRouter>
   );
